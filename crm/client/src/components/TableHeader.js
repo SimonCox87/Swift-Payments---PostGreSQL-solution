@@ -1,6 +1,6 @@
 import React from "react";
 
-function TableHeader({ page, filterStatus, add, deleteDoc }) {
+function TableHeader({ page, filterStatus, add, del, id }) {
   return (
     <div className="table-header">
       <h1>{`${!page ? "Deals" : page} - ${filterStatus}`}</h1>
@@ -8,12 +8,12 @@ function TableHeader({ page, filterStatus, add, deleteDoc }) {
         <button className="button-delete" onClick={() => add()}>
           Add
         </button>
-        <button className="button-add" onClick={() => deleteDoc()}>
+        <button className="button-add" onClick={() => del(id)}>
           Delete
         </button>
       </div>
     </div>
-  );
+  );  
 }
 
 export default TableHeader;

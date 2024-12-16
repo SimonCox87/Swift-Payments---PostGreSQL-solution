@@ -1,5 +1,6 @@
 import React from "react";
 
+// Render the companies table
 function Companies({
   companyData,
   handleUpdate,
@@ -20,37 +21,37 @@ function Companies({
       </thead>
       <tbody>
         {companyData.map((company, index) => (
-          <tr key={index} className={rowColour(company.linkedStatus)}>
+          <tr key={company.customer_id} className={rowColour(company.customer_status)}>
             <td>
               <input
                 type="text"
                 value={
-                  (tempText[company.id] && tempText[company.id].name) ||
-                  company.name
+                  (tempText[company.customer_id] && tempText[company.customer_id].company_name) ||
+                  company.company_name
                 }
                 onChange={(e) =>
-                  handleUpdate("companies", company.id, "name", e.target.value)
+                  handleUpdate("companies", company.customer_id, "company_name", e.target.value)
                 }
-                onPaste={(e) => handlePaste("companies", company.id, "name", e)}
+                onPaste={(e) => handlePaste("companies", company.customer_id, "company_name", e)}
               />
             </td>
             <td>
               <input
                 type="text"
                 value={
-                  (tempText[company.id] && tempText[company.id].category) ||
+                  (tempText[company.customer_id] && tempText[company.customer_id].category) ||
                   company.category
                 }
                 onChange={(e) =>
                   handleUpdate(
                     "companies",
-                    company.id,
+                    company.customer_id,
                     "category",
                     e.target.value
                   )
                 }
                 onPaste={(e) =>
-                  handlePaste("companies", company.category, "category", e)
+                  handlePaste("companies", company.customer_id, "category", e)
                 }
               />
             </td>
@@ -58,19 +59,19 @@ function Companies({
               <input
                 type="text"
                 value={
-                  (tempText[company.id] && tempText[company.id].number) ||
-                  company.number
+                  (tempText[company.cuustomer_id] && tempText[company.customer_id].company_number) ||
+                  company.company_number
                 }
                 onChange={(e) =>
                   handleUpdate(
                     "companies",
-                    company.id,
-                    "number",
+                    company.customer_id,
+                    "company_number",
                     e.target.value
                   )
                 }
                 onPaste={(e) =>
-                  handlePaste("companies", company.number, "number", e)
+                  handlePaste("companies", company.customer_id, "company_number", e)
                 }
               />
             </td>
@@ -78,14 +79,14 @@ function Companies({
               <input
                 type="text"
                 value={
-                  (tempText[company.id] && tempText[company.id].user) ||
-                  company.user
+                  (tempText[company.customer_id] && tempText[company.customer_id].company_user) ||
+                  company.company_user
                 }
                 onChange={(e) =>
-                  handleUpdate("companies", company.id, "user", e.target.value)
+                  handleUpdate("companies", company.customer_id, "company_user", e.target.value)
                 }
                 onPaste={(e) =>
-                  handlePaste("companies", company.user, "user", e)
+                  handlePaste("companies", company.customer_id, "company_user", e)
                 }
               />
             </td>
@@ -93,19 +94,19 @@ function Companies({
               <input
                 type="text"
                 value={
-                  (tempText[company.id] && tempText[company.id].address) ||
-                  company.address
+                  (tempText[company.customer_id] && tempText[company.customer_id].company_address) ||
+                  company.company_address
                 }
                 onChange={(e) =>
                   handleUpdate(
                     "companies",
-                    company.id,
-                    "address",
+                    company.customer_id,
+                    "company_address",
                     e.target.value
                   )
                 }
                 onPaste={(e) =>
-                  handlePaste("companies", company.address, "adress", e)
+                  handlePaste("companies", company.customer_id, "company_address", e)
                 }
               />
             </td>

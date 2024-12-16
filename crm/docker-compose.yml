@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: ./client  # React Dockerfile location
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+    environment:
+      - REACT_APP_SOCKET_URL=http://localhost:5000
+    env_file:
+      - ./client/.env.docker
+
+  backend:
+    build:
+      context: ./server  # Node.js Dockerfile location
+    ports:
+      - "5000:5000"
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/crm
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: crm
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5433:5432" # mapped to port 5433 in case postgres is running locally on host's port 5432.
+
+volumes:
+  postgres_data:

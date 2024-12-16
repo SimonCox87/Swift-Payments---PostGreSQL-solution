@@ -1,0 +1,21 @@
+# Node
+node_modules
+npm-debug.log
+dist
+
+# Version control
+.git
+.gitignore
+
+# IDE and Editor files
+.vscode
+.idea
+*.swp
+*.swo
+
+# Testing
+coverage
+*.test.js
+
+# OS files
+.DS_Store

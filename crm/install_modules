@@ -1,0 +1,154 @@
+#!/bin/bash
+
+# Function to install Node.js if not installed
+install_node() {
+    echo "Node.js is not installed. Attempting to install Node.js..."
+    
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        # Check if Homebrew is installed, and install if necessary
+        if ! command -v brew &> /dev/null; then
+            echo "Homebrew is not installed. Installing Homebrew..."
+            /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+            echo "Homebrew installation complete."
+        fi
+        brew install node
+    elif [[ -f "/etc/debian_version" ]]; then
+        sudo apt update
+        sudo apt install -y nodejs npm
+    elif [[ -f "/etc/redhat-release" ]]; then
+        sudo yum install -y nodejs npm
+    else
+        echo "Unsupported OS. Please install Node.js manually."
+        exit 1
+    fi
+
+    echo "Node.js installation complete."
+}
+
+# Check if Node.js and npm are installed
+if ! command -v node &> /dev/null; then
+    install_node
+fi
+if ! command -v npm &> /dev/null; then
+    echo "npm is not installed. Please install npm and try again."
+    exit 1
+fi
+
+# Function to install dependencies and start server in a new terminal
+setup_project() {
+    local dir=$1
+    local name=$2
+
+    echo "Setting up $name in $dir..."
+
+    cd "$dir" || exit
+
+    if [ -f "package.json" ]; then
+        echo "Installing dependencies for $name..."
+        npm install
+    else
+        echo "package.json not found in $dir. Please ensure it exists."
+        exit 1
+    fi
+
+    echo -n "Would you like to start the $name server? (Y to start): "
+    read start_server
+    if [ "$start_server" == "Y" ]; then
+        echo "Starting $name server in a new terminal..."
+        if [[ "$OSTYPE" == "darwin"* ]]; then
+            open -a Terminal "bash -c 'cd $(pwd) && npm start; exec bash'"
+        elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
+            gnome-terminal -- bash -c "cd $(pwd) && npm start; exec bash"
+        else
+            echo "Unsupported OS for opening a new terminal. Please start the server manually."
+        fi
+    else
+        echo "Skipping $name server start. You can start it later with 'npm start'."
+    fi
+}
+
+# Backend setup
+setup_project "./server" "Backend"
+
+# Frontend setup
+setup_project "../client" "Frontend"
+
+# Navigate back to crm folder
+cd ..
+
+# Save the original directory where the script starts
+SCRIPT_DIR="$(pwd)"
+echo "$SCRIPT_DIR"
+
+# PostgreSQL setup
+echo "Setting up PostgreSQL..."
+
+install_postgresql() {
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        echo "Installing PostgreSQL on macOS..."
+        brew install postgresql
+        brew services start postgresql
+    elif [[ -f "/etc/debian_version" ]]; then
+        echo "Installing PostgreSQL on Debian/Ubuntu..."
+        sudo apt update
+        sudo apt install -y postgresql postgresql-contrib
+        sudo systemctl start postgresql
+        sudo systemctl enable postgresql
+    elif [[ -f "/etc/redhat-release" ]]; then
+        echo "Installing PostgreSQL on Red Hat/CentOS..."
+        sudo yum install -y postgresql-server postgresql-contrib
+        sudo postgresql-setup initdb
+        sudo systemctl start postgresql
+        sudo systemctl enable postgresql
+    else
+        echo "Unsupported OS for automatic PostgreSQL installation."
+        exit 1
+    fi
+}
+
+if ! command -v psql &> /dev/null; then
+    install_postgresql
+else
+    echo "PostgreSQL is already installed."
+fi
+
+# Grant permissions to postgres user
+update_permissions() {
+    local path=$1
+    echo "Updating permissions for $path..."
+    if [[ "$OSTYPE" == "darwin"* || "$OSTYPE" == "linux-gnu"* ]]; then
+        sudo setfacl -m u:postgres:rx "$path"
+    else
+        echo "Unsupported OS for updating permissions. Please grant permissions manually."
+    fi
+}
+
+# Ensure postgres can access all directories in the path to init.sql
+IFS='/' read -ra DIRS <<< "$SCRIPT_DIR"
+CURRENT_PATH=""
+for DIR in "${DIRS[@]}"; do
+    CURRENT_PATH="$CURRENT_PATH/$DIR"
+    update_permissions "$CURRENT_PATH"
+done
+
+# Update permissions for init.sql
+sudo chmod 644 "$SCRIPT_DIR/init.sql"
+sudo chown postgres:postgres "$SCRIPT_DIR/init.sql"
+
+# Configure PostgreSQL
+echo "Configuring PostgreSQL..."
+INIT_SQL_PATH="$SCRIPT_DIR/init.sql" # Use absolute path to init.sql
+
+if [ ! -f "$INIT_SQL_PATH" ]; then
+    echo "Error: init.sql not found at $INIT_SQL_PATH."
+    exit 1
+fi
+
+sudo -u postgres psql <<EOF
+ALTER USER postgres PASSWORD 'postgres';
+CREATE DATABASE crm;
+\c crm
+\i '$INIT_SQL_PATH'
+EOF
+
+echo "PostgreSQL setup complete. Database 'crm' created with data from init.sql."

@@ -52,11 +52,11 @@ function CustomerTable({
       <tbody>
         {customerData.map((customer, index) => (
           <tr
-            key={index}
-            className={rowColour(customer.status)}
+            key={customer.customer_id}
+            className={rowColour(customer.customer_status)}
             style={{
               backgroundColor:
-                customer.id === customerId && "RGB(200, 162, 200)",
+                customer.customer_id === customerId && "RGB(200, 162, 200)",
               opacity: 0.66,
             }}
           >
@@ -64,20 +64,20 @@ function CustomerTable({
               <input
                 type="text"
                 value={
-                  (tempText[customer.id] &&
-                    tempText[customer.id].companyName) ||
-                  customer.companyName
+                  (tempText[customer.customer_id] &&
+                    tempText[customer.customer_id].customer_name) ||
+                  customer.customer_name
                 }
                 onChange={(e) =>
                   handleUpdate(
                     "customers",
-                    customer.id,
-                    "companyName",
+                    customer.customer_id,
+                    "customer_name",
                     e.target.value
                   )
                 }
                 onPaste={(e) =>
-                  handlePaste("customers", customer.id, "companyName", e)
+                  handlePaste("customers", customer.customer_id, "customer_name", e)
                 }
               />
             </td>
@@ -85,20 +85,20 @@ function CustomerTable({
               <input
                 type="text"
                 value={
-                  (tempText[customer.id] &&
-                    tempText[customer.id].tradingName) ||
-                  customer.tradingName
+                  (tempText[customer.customer_id] &&
+                    tempText[customer.customer_id].trading_name) ||
+                  customer.trading_name
                 }
                 onChange={(e) =>
                   handleUpdate(
                     "customers",
-                    customer.id,
-                    "tradingName",
+                    customer.customer_id,
+                    "trading_name",
                     e.target.value
                   )
                 }
                 onPaste={(e) =>
-                  handlePaste("customers", customer.id, "tradingName", e)
+                  handlePaste("customers", customer.customer_id, "trading_name", e)
                 }
               />
             </td>
@@ -106,37 +106,20 @@ function CustomerTable({
               <input
                 type="text"
                 value={
-                  (tempText[customer.id] &&
-                    tempText[customer.id].contactName) ||
-                  customer.contactName
+                  (tempText[customer.customer_id] &&
+                    tempText[customer.customer_id].contact_name) ||
+                  customer.contact_name
                 }
                 onChange={(e) =>
                   handleUpdate(
                     "customers",
-                    customer.id,
-                    "contactName",
-                    e.target.value
-                  )
-                }
-              />
-            </td>
-            <td>
-              <input
-                type="text"
-                value={
-                  (tempText[customer.id] && tempText[customer.id].telNumber) ||
-                  customer.telNumber
-                }
-                onChange={(e) =>
-                  handleUpdate(
-                    "customers",
-                    customer.id,
-                    "telNumber",
+                    customer.customer_id,
+                    "contact_name",
                     e.target.value
                   )
                 }
                 onPaste={(e) =>
-                  handlePaste("customers", customer.id, "telNumber", e)
+                  handlePaste("customers", customer.customer_id, "contact_name", e)
                 }
               />
             </td>
@@ -144,19 +127,39 @@ function CustomerTable({
               <input
                 type="text"
                 value={
-                  (tempText[customer.id] && tempText[customer.id].email) ||
+                  (tempText[customer.customer_id] && tempText[customer.customer_id].tel_number) ||
+                  customer.tel_number
+                }
+                onChange={(e) =>
+                  handleUpdate(
+                    "customers",
+                    customer.customer_id,
+                    "tel_number",
+                    e.target.value
+                  )
+                }
+                onPaste={(e) =>
+                  handlePaste("customers", customer.customer_id, "tel_number", e)
+                }
+              />
+            </td>
+            <td>
+              <input
+                type="text"
+                value={
+                  (tempText[customer.customer_id] && tempText[customer.customer_id].email) ||
                   customer.email
                 }
                 onChange={(e) =>
                   handleUpdate(
                     "customers",
-                    customer.id,
+                    customer.customer_id,
                     "email",
                     e.target.value
                   )
                 }
                 onPaste={(e) =>
-                  handlePaste("customers", customer.id, "email", e)
+                  handlePaste("customers", customer.customer_id, "email", e)
                 }
               />
             </td>
@@ -164,19 +167,19 @@ function CustomerTable({
               <input
                 type="text"
                 value={
-                  (tempText[customer.id] && tempText[customer.id].merchantId) ||
-                  customer.merchantId
+                  (tempText[customer.customer_id] && tempText[customer.customer_id].merchant_id) ||
+                  customer.merchant_id
                 }
                 onChange={(e) =>
                   handleUpdate(
                     "customers",
-                    customer.id,
-                    "merchantId",
+                    customer.customer_id,
+                    "merchant_id",
                     e.target.value
                   )
                 }
                 onPaste={(e) =>
-                  handlePaste("customers", customer.id, "merchantId", e)
+                  handlePaste("customers", customer.customer_id, "merchant_id", e)
                 }
               />
             </td>
@@ -184,19 +187,19 @@ function CustomerTable({
               <input
                 type="text"
                 value={
-                  (tempText[customer.id] && tempText[customer.id].bankNumber) ||
-                  customer.bankNumber
+                  (tempText[customer.customer_id] && tempText[customer.customer_id].bank_number) ||
+                  customer.bank_number
                 }
                 onChange={(e) =>
                   handleUpdate(
                     "customers",
-                    customer.id,
-                    "bankNumber",
+                    customer.customer_id,
+                    "bank_number",
                     e.target.value
                   )
                 }
                 onPaste={(e) =>
-                  handlePaste("customers", customer.id, "bankNumber", e)
+                  handlePaste("customers", customer.customer_id, "bank_number", e)
                 }
               />
             </td>
@@ -205,12 +208,12 @@ function CustomerTable({
                 id="status"
                 name="status"
                 value={
-                  (tempText[customer.id] && tempText[customer.id].status) ||
-                  customer.status
+                  (tempText[customer.customer_id] && tempText[customer.customer_id].customer_status) ||
+                  customer.customer_status
                 }
                 onChange={(e) => {
                   e.target.value !== "placeholder" &&
-                    amend("customers", customer.id, "status", e.target.value);
+                    amend("customers", customer.customer_id, "customer_status", e.target.value);
                 }}
               >
                 <option value="placeholder">status...</option>
@@ -224,7 +227,7 @@ function CustomerTable({
               <input
                 type="radio"
                 name="customer"
-                onClick={() => selectId(customer.id)}
+                onClick={() => selectId(customer.customer_id)}
               ></input>
             </td>
           </tr>
