@@ -16,7 +16,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "preinstall": "npx npm-force-resolutions"
   },
   "eslintConfig": {
     "extends": [
@@ -36,5 +37,11 @@
       "last 1 safari version"
     ]
   },
-  "proxy": "http://localhost:5000"
+  "resolutions": {
+    "postcss": "8.4.31"
+  },
+  "proxy": "http://localhost:5000",
+  "devDependencies": {
+    "npm-force-resolutions": "^0.0.10"
+  }
 }
