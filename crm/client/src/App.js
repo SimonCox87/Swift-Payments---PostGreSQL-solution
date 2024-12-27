@@ -96,7 +96,7 @@ function App() {
     };
   }, []);
 
-  // useEffect listener function to communicate with customers table in our database
+  // useEffect listener function to communicate with companies table in our database
   useEffect(() => {
     // Listener for company updates
     socket.on("update:companies", (updatedCompany) => {
@@ -345,10 +345,6 @@ function App() {
   // Below elements are returned by app function.
   // 1. The TableHeader component is returned and its props are defined and passed to the component.
   // 2. The CustomerTable component is returned and its props are defined and passed to the component.
-
-  // Tasks to complete
-  // 5 - Create Docker compose file to run the client,server and postgres as a cluster.  Need to make a decistion as to
-  //     whether it is best to install postgres globally or to have it installed in a container.
 
   console.log(process.env.REACT_APP_SOCKET_URL);
 
