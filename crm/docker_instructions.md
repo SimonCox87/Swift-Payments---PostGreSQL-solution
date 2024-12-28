@@ -13,3 +13,16 @@ Instructions for running in Docker
 
 5 - Type the following command to stop the containers;
     docker-compose down
+
+Instructions post-installation
+
+1 - To run the containers containing frontend, backend and Postgresql images
+    navigate to the crm folder in a terminal session.
+
+2 - Run the following command to run the containers;
+    docker-compose up
+    (You do not need to build the images everytime).
+
+3 - To stop the images press ctrl-c and in the terminal (you should still be in the
+    crm directory) enter the following command; 
+    docker-compose down

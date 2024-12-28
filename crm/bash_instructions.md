@@ -18,9 +18,30 @@ Instructions to install modules for development
     - psql -U postgres -W
     - Enter password "postgres" when prompted
     - \c crm - to navigate to crm database
-    - To view contents of the tables type either;
+    - To view contents of the tables type either (make sure to include the ";" after the commands);
         - SELECT * FROM customers;
         - SELECT * FROM companies;
 
-To manually start the backend server
+Once the modules are installed you do not need to run the bash script again.  You will need
+to be able to start the backend server and the frontend server, so that you can run the 
+web app locally.  It is important you do not run the bash script again as you will lose the data
+that you have inserted into the database since the first install, as you are essentially deleting
+the tables and inserting the data into them from the init.sql script.  
 
+To start the backend server.
+1 - Navigate to crm/server using the cd command in vs code terminal (or open a new terminal session
+    and navigate to the aforementioned directory)
+
+2 - Run the command;
+    npm run start.
+
+3 - Press ctrl-c in the terminal to stop the server
+
+
+To start the frontend server.
+1 - Navigate to crm/client.  You will need to open up a new terminal session to do this.
+
+2 - Run the command to start development server;
+    npm start
+
+3 - To stop the server press ctrl-c.
