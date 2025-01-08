@@ -32,7 +32,7 @@ install_node() {
 # Check and install Node.js and npm
 install_node
 
-# Function to install dependencies and start server in a new terminal
+# Function to install dependencies and handle frontend-specific issues
 setup_project() {
     local dir=$1
     local name=$2
@@ -43,6 +43,13 @@ setup_project() {
 
     if [ -f "package.json" ]; then
         echo "Installing dependencies for $name..."
+        
+        # Remove package-lock.json if it exists (fix for ajv dependency issue)
+        if [ -f "package-lock.json" ]; then
+            echo "Removing package-lock.json to avoid version conflicts..."
+            rm -f package-lock.json
+        fi
+        
         npm install
         if [ ! -d "node_modules" ]; then
             echo "Error: Dependencies not installed correctly in $dir."
