@@ -256,6 +256,6 @@ app.delete("/customers/:id", async (req, res) => {
 });
 
 // function to start the server
-server.listen(5000, () => {
-  console.log("server has started on port 5000");
+server.listen(5001, () => {
+  console.log("server has started on port 5001");
 });

@@ -31,7 +31,7 @@ function App() {
   const getTable = async (table) => {
     try {
       // try to call get api.
-      const response = await fetch(`http://localhost:5000/${table}`);
+      const response = await fetch(`http://localhost:5001/${table}`);
       if (!response.ok) {
         throw new Error(`Failed to fetch ${table} data`);
       }
@@ -209,7 +209,7 @@ function App() {
 
     // call delete api
     try {
-      await fetch(`http://localhost:5000/customers/${id}`, {
+      await fetch(`http://localhost:5001/customers/${id}`, {
         method: "DELETE",
       });
 
@@ -231,7 +231,7 @@ function App() {
   // Function to add new customer record to the database.  Ready for the user to add the data
   async function add() {
     try {
-      await fetch("http://localhost:5000/customers/", {
+      await fetch("http://localhost:5001/customers/", {
         method: "POST",
       });
     } catch (err) {
@@ -243,7 +243,7 @@ function App() {
   async function amend(table, id, column, value) {
     try {
       const body = { [column]: value };
-      await fetch(`http://localhost:5000/${table}/${id}`, {
+      await fetch(`http://localhost:5001/${table}/${id}`, {
         method: "PUT",
         headers: { "Content-type": "application/json" },
         body: JSON.stringify(body),
