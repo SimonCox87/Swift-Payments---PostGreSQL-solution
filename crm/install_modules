@@ -105,20 +105,8 @@ configure_postgresql() {
         exit 1
     fi
 
-    echo "Setting up the database and running init.sql..."
-    PGPASSWORD=postgres psql -U postgres -d postgres <<EOF
-    CREATE DATABASE crm;
-    \c crm
-    \i '$init_sql_path'
-EOF
-    elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
+    if [[ "$OSTYPE" == "linux-gnu"* ]]; then
         echo "Detected Linux: Using postgres user for setup."
-
-        if [ ! -f "$init_sql_path" ]; then
-            echo "Error: init.sql not found at $init_sql_path."
-            exit 1
-        fi
-
         sudo chmod 644 "$init_sql_path"
         sudo chown postgres:postgres "$init_sql_path"
 
@@ -129,8 +117,11 @@ CREATE DATABASE crm;
 \i '$init_sql_path'
 EOF
     else
-        echo "Unsupported OS for PostgreSQL configuration."
-        exit 1
+        PGPASSWORD=postgres psql -U postgres -d postgres <<EOF
+CREATE DATABASE crm;
+\c crm
+\i '$init_sql_path'
+EOF
     fi
 
     echo "PostgreSQL setup complete. Database 'crm' created with data from init.sql."
@@ -155,10 +146,9 @@ fi
 # Ensure we are in the correct directory to access init.sql
 cd .. || exit
 
-# Path to init.sql # This is wrong
+# Path to init.sql
 INIT_SQL_PATH="$(pwd)/init.sql"
 
-# Configure PostgreSQL
 # Configure PostgreSQL
 if [ ! -f "$INIT_SQL_PATH" ]; then
     echo "Error: init.sql not found at $INIT_SQL_PATH."
