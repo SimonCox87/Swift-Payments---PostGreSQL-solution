@@ -29,9 +29,6 @@ install_node() {
     fi
 }
 
-# Check and install Node.js and npm
-install_node
-
 # Function to install dependencies and handle frontend-specific issues
 setup_project() {
     local dir=$1
@@ -61,13 +58,7 @@ setup_project() {
     fi
 }
 
-# Backend setup
-setup_project "./server" "Backend"
-
-# Frontend setup
-setup_project "../client" "Frontend"
-
-# PostgreSQL setup
+# Function to install PostgreSQL if not installed
 install_postgresql() {
     if [[ "$OSTYPE" == "darwin"* ]]; then
         echo "Installing PostgreSQL on macOS..."
@@ -95,59 +86,59 @@ install_postgresql() {
     fi
 }
 
+# Function to configure PostgreSQL and set up the database
+configure_postgresql() {
+    local init_sql_path="$1"
+
+    echo "Configuring PostgreSQL..."
+
+    if [[ "$OSTYPE" == "darwin"* || "$OSTYPE" == "linux-gnu"* ]]; then
+        echo "Updating permissions for $init_sql_path..."
+        sudo chmod 644 "$init_sql_path"
+        sudo chown postgres:postgres "$init_sql_path"
+    fi
+
+    if [ ! -f "$init_sql_path" ]; then
+        echo "Error: init.sql not found at $init_sql_path."
+        exit 1
+    fi
+
+    sudo -u postgres psql <<EOF
+ALTER USER postgres PASSWORD 'postgres';
+CREATE DATABASE crm;
+\c crm
+\i '$init_sql_path'
+EOF
+    echo "PostgreSQL setup complete. Database 'crm' created with data from init.sql."
+}
+
+# Main script execution
+install_node
+
+# Backend setup
+setup_project "./server" "Backend"
+
+# Frontend setup
+setup_project "../client" "Frontend"
+
+# Install and configure PostgreSQL
 if ! command -v psql &> /dev/null; then
     install_postgresql
 else
     echo "PostgreSQL is already installed."
 fi
 
-# Grant permissions and configure PostgreSQL
-update_permissions() {
-    local path=$1
-    echo "Updating permissions for $path..."
-    if [[ "$OSTYPE" == "darwin"* || "$OSTYPE" == "linux-gnu"* ]]; then
-        sudo setfacl -m u:postgres:rx "$path"
-    else
-        echo "Unsupported OS for updating permissions. Please grant permissions manually."
-    fi
-}
-
-# Ensure postgres can access all directories in the path to init.sql
-SCRIPT_DIR="$(pwd)"
-IFS='/' read -ra DIRS <<< "$SCRIPT_DIR"
-CURRENT_PATH=""
-for DIR in "${DIRS[@]}"; do
-    CURRENT_PATH="$CURRENT_PATH/$DIR"
-    update_permissions "$CURRENT_PATH"
-done
+# Path to init.sql
+INIT_SQL_PATH="$(pwd)/init.sql"
 
 # Configure PostgreSQL
-echo "Configuring PostgreSQL..."
-INIT_SQL_PATH="$SCRIPT_DIR/init.sql"
-
-if [ ! -f "$INIT_SQL_PATH" ]; then
-    echo "Error: init.sql not found at $INIT_SQL_PATH."
-    exit 1
-fi
-
-sudo chmod 644 "$INIT_SQL_PATH"
-sudo chown postgres:postgres "$INIT_SQL_PATH"
-
-sudo -u postgres psql <<EOF
-ALTER USER postgres PASSWORD 'postgres';
-CREATE DATABASE crm;
-\c crm
-\i '$INIT_SQL_PATH'
-EOF
-
-echo "PostgreSQL setup complete. Database 'crm' created with data from init.sql."
+configure_postgresql "$INIT_SQL_PATH"
 
 # Instructions to start frontend and backend servers
 echo "Setup is complete. You can now start your servers."
 
-echo -n "Would you like to start the backend server now? (Y to start): "
-read start_backend
-if [ "$start_backend" == "Y" ]; then
+read -p "Would you like to start the backend server now? (Y to start): " start_backend
+if [[ "$start_backend" == "Y" || "$start_backend" == "y" ]]; then
     echo "Starting backend server..."
     cd ./server || exit
     npm start
@@ -155,9 +146,8 @@ else
     echo "Skipping backend server start. You can start it manually later."
 fi
 
-echo -n "Would you like to start the frontend server now? (Y to start): "
-read start_frontend
-if [ "$start_frontend" == "Y" ]; then
+read -p "Would you like to start the frontend server now? (Y to start): " start_frontend
+if [[ "$start_frontend" == "Y" || "$start_frontend" == "y" ]]; then
     echo "Starting frontend server..."
     cd ../client || exit
     npm start
