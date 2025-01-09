@@ -104,10 +104,10 @@ configure_postgresql() {
     fi
 
     sudo -u postgres psql <<EOF
-ALTER USER postgres PASSWORD 'postgres';
-CREATE DATABASE crm;
-\c crm
-\i '$init_sql_path'
+    ALTER USER postgres PASSWORD 'postgres';
+    CREATE DATABASE crm;
+    \c crm
+    \i '$init_sql_path'
 EOF
     echo "PostgreSQL setup complete. Database 'crm' created with data from init.sql."
 }
@@ -128,10 +128,19 @@ else
     echo "PostgreSQL is already installed."
 fi
 
-# Path to init.sql
+# Ensure we are in the correct directory to access init.sql
+cd .. || exit
+
+# Path to init.sql # This is wrong
 INIT_SQL_PATH="$(pwd)/init.sql"
 
 # Configure PostgreSQL
+# Configure PostgreSQL
+if [ ! -f "$INIT_SQL_PATH" ]; then
+    echo "Error: init.sql not found at $INIT_SQL_PATH."
+    exit 1
+fi
+
 configure_postgresql "$INIT_SQL_PATH"
 
 # Instructions to start frontend and backend servers
