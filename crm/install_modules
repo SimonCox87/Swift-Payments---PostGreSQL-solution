@@ -86,29 +86,54 @@ install_postgresql() {
     fi
 }
 
-# Function to configure PostgreSQL and set up the database
+# Configure PostgreSQL and set up the database
 configure_postgresql() {
     local init_sql_path="$1"
 
     echo "Configuring PostgreSQL..."
+    
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        echo "Detected macOS: Using current user for PostgreSQL setup."
 
-    if [[ "$OSTYPE" == "darwin"* || "$OSTYPE" == "linux-gnu"* ]]; then
-        echo "Updating permissions for $init_sql_path..."
+        # Use the current macOS user as the default PostgreSQL user
+        PG_USER=$(whoami)
+
+        if [ ! -f "$init_sql_path" ]; then
+            echo "Error: init.sql not found at $init_sql_path."
+            exit 1
+        fi
+
+        # Apply permissions to the init.sql file
+        sudo chmod 644 "$init_sql_path"
+        sudo chown "$PG_USER" "$init_sql_path"
+
+        psql -U "$PG_USER" <<EOF
+CREATE DATABASE crm;
+\c crm
+\i '$init_sql_path'
+EOF
+    elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
+        echo "Detected Linux: Using postgres user for setup."
+
+        if [ ! -f "$init_sql_path" ]; then
+            echo "Error: init.sql not found at $init_sql_path."
+            exit 1
+        fi
+
         sudo chmod 644 "$init_sql_path"
         sudo chown postgres:postgres "$init_sql_path"
-    fi
 
-    if [ ! -f "$init_sql_path" ]; then
-        echo "Error: init.sql not found at $init_sql_path."
+        sudo -u postgres psql <<EOF
+ALTER USER postgres PASSWORD 'postgres';
+CREATE DATABASE crm;
+\c crm
+\i '$init_sql_path'
+EOF
+    else
+        echo "Unsupported OS for PostgreSQL configuration."
         exit 1
     fi
 
-    sudo -u postgres psql <<EOF
-    ALTER USER postgres PASSWORD 'postgres';
-    CREATE DATABASE crm;
-    \c crm
-    \i '$init_sql_path'
-EOF
     echo "PostgreSQL setup complete. Database 'crm' created with data from init.sql."
 }
 
