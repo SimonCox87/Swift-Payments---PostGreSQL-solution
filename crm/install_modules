@@ -93,24 +93,23 @@ configure_postgresql() {
     echo "Configuring PostgreSQL..."
     
     if [[ "$OSTYPE" == "darwin"* ]]; then
-        echo "Detected macOS: Using current user for PostgreSQL setup."
-
-        # Use the current macOS user as the default PostgreSQL user
-        PG_USER=$(whoami)
-
-        if [ ! -f "$init_sql_path" ]; then
-            echo "Error: init.sql not found at $init_sql_path."
-            exit 1
+        echo "Checking for 'postgres' user on macOS..."
+        if ! psql -U postgres -c '\q' 2>/dev/null; then
+            echo "Creating 'postgres' superuser role..."
+            createuser -s postgres || { echo "Error: Failed to create 'postgres' user."; exit 1; }
         fi
+    fi
 
-        # Apply permissions to the init.sql file
-        sudo chmod 644 "$init_sql_path"
-        sudo chown "$PG_USER" "$init_sql_path"
+    if [ ! -f "$init_sql_path" ]; then
+        echo "Error: init.sql not found at $init_sql_path."
+        exit 1
+    fi
 
-        psql -U "$PG_USER" <<EOF
-CREATE DATABASE crm;
-\c crm
-\i '$init_sql_path'
+    echo "Setting up the database and running init.sql..."
+    PGPASSWORD=postgres psql -U postgres -d postgres <<EOF
+    CREATE DATABASE crm;
+    \c crm
+    \i '$init_sql_path'
 EOF
     elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
         echo "Detected Linux: Using postgres user for setup."
