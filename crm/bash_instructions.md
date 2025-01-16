@@ -9,20 +9,12 @@ Instructions to install modules for development
 3 - When propmted enter "Y" and hit return.  This opens the backend terminal in a separate
     terminal session.  To stop the terminals use ctrl-c.
 
-4 - (a) Open a new terminal session.  Navigate to crm/client;
-    cd crm/client  or cd web-portal/crm/client
-
-    (b) In the terminal type the following command;
-    npm start
-
-TO EXIT TERMINALS PRESS THE FOLLOWING COMBINATION OF KEYS; ctrl c
-
-5 - Postgres is installed globally.  A database is created, two tables named
-    "customers" and "companies" are created and the tables are populated with
-    test data.
+Postgres is installed globally.  A database is created, two tables named
+"customers" and "companies" are created and the tables are populated with
+test data.
  
-6 - To view the databases enter the following series of commands to view the database
-    IN LINUX TERMINAL
+To view the databases enter the following series of commands to view the database
+IN LINUX TERMINAL
     -Enter the following commands in sequence;
         - sudo -i -u postgres
         - psql -U postgres -W
@@ -32,7 +24,7 @@ TO EXIT TERMINALS PRESS THE FOLLOWING COMBINATION OF KEYS; ctrl c
             - SELECT * FROM customers;
             - SELECT * FROM companies;
     
-    IN macOS TERMINAL
+IN macOS TERMINAL
     - Enter the following commands in the following sequence;
         - psql postgres
         - \c crm
@@ -40,20 +32,20 @@ TO EXIT TERMINALS PRESS THE FOLLOWING COMBINATION OF KEYS; ctrl c
             - SELECT * FROM customers;
             - SELECT * FROM companies;
     
-    TROUBLESHOOTING
-    - I think that most issues will probably arise when the postgres server stops running as a background
-      process.
-    - To check whether postgres is running as a background service to check this;
-        - open Systems Settings
-        - navigate to General -> Login Items & Extensions
-        - scroll down to "Allow in the Background" and enable postgres
-    
-    - Via the terminal
-        - type; brew services start postgresql@14.
-    
-    - If you already have the servers running you should be able to refresh the tab containing the web app.
-      Otherwise close both servers using ctrl c and then restart the backend (server) first ("npm run start)
-      and then start the frontend server(client) ("npm start").
+TROUBLESHOOTING
+- I think that most issues will probably arise when the postgres server stops running as a background
+    process.
+- To check whether postgres is running as a background service to check this;
+    - open Systems Settings
+    - navigate to General -> Login Items & Extensions
+    - scroll down to "Allow in the Background" and enable postgres
+
+- Via the terminal
+    - type; brew services start postgresql@14.
+
+- If you already have the servers running you should be able to refresh the tab containing the web app.
+    Otherwise close both servers using ctrl c and then restart the backend (server) first ("npm run start)
+    and then start the frontend server(client) ("npm start").
 
 
 Once the modules are installed you do not need to run the bash script again.  You will need
@@ -79,3 +71,5 @@ To start the frontend server.
     npm start
 
 3 - To stop the server press ctrl-c.
+
+TYPE THE URL: localhost:8080 INTO THE WEB BROWSER
