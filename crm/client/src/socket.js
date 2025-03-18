@@ -6,7 +6,7 @@ import { io } from "socket.io-client";
 // app is being deployed locally or via a docker
 
 // define the socket url
-const socketUrl = `ws://${window.location.hostname}:8080`; // will save this in a .env file for production
+const socketUrl = `ws://${window.location.hostname}:5001`; // will save this in a .env file for production
 
 const socket = io(socketUrl, {
     transports: ['websocket'], // Ensure WebSocket is used

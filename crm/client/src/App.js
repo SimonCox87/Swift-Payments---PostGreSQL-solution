@@ -6,7 +6,12 @@ import CustomerTable from "./components/CustomerTable";
 import Companies from "./components/Companies";
 import Contact from "./components/Contact";
 import Locations from "./components/Locations";
+import Quotes from "./components/Quotes.js"
 import socket from "./socket.js";
+import useTableSocket from "./hooks/tableSocket.js";
+import useFilterTables from "./hooks/filterTables.js";
+import useSyncCustomerName from "./hooks/syncCustomerName.js";
+import useSyncCustomerStatus from "./hooks/syncCustomerStatus.js";
 
 // Create our main App function, which holds our data, functions and basic html structure for our
 // components.  Also returns jsx for our app.
@@ -16,8 +21,15 @@ function App() {
   // the data is changed the webpage and it's underlying components will be altered to reflect this change.
   const [customerData, setCustomerData] = React.useState([]);
   const [companyData, setCompanyData] = React.useState([]);
+  const [contactData, setContactData] = React.useState([]);
+  const [locationData, setLocationData] = React.useState([]);
+  const [quoteData, setQuoteData] = React.useState([]);
+  const [dataLoaded, setDataLoaded] = React.useState(false);
   const [filteredCustomerData, setFilteredCustomerData] = React.useState([]);
   const [filteredCompanyData, setFilteredCompanyData] = React.useState([]);
+  const [filteredContactData, setFilteredContactData] = React.useState([]);
+  const [filteredLocationData, setFilteredLocationData] = React.useState([]);
+  const [filteredQuoteData, setFilteredQuoteData] = React.useState([]);
   const [filterStatus, setFilterStatus] = React.useState("All");
   const [tempText, setTempText] = React.useState({});
   const [page, setPage] = React.useState(null);
@@ -45,6 +57,12 @@ function App() {
         setCustomerData(sortedJson);
       } else if (table === "companies") {
         setCompanyData(sortedJson);
+      } else if (table === "contacts") {
+        setContactData(sortedJson);
+      } else if (table === "locations") {
+        setLocationData(sortedJson);
+      } else if (table === "quotes") {
+        setQuoteData(sortedJson);
       }
     } catch (err) {
       console.error(`Error fetching table data: ${err.message}`);
@@ -53,144 +71,34 @@ function App() {
 
   // useEffect to load the customers and companies tables on initial load of the site.
   useEffect(() => {
-    getTable("customers");
-    getTable("companies");
-  }, []);
-
-  // useEffect listener function to communicate with customers table in our database
-  useEffect(() => {
-    // Listener for customer updates
-    socket.on("update:customers", (updatedCustomer) => {
-
-      console.log("Socket on!!!")
-
-      // If the server sends the entire list of customers meaning the user has added
-      // a new customer table is re-rendered using getTable() function.
-      if (Array.isArray(updatedCustomer)) {
-        getTable("customers");
-      // Else if there are only updates made to existing customer data reflect this
-      // change by updating the customerData state variable. 
-      } else {
-        setCustomerData((prev) =>
-          prev.map((cust) =>
-            cust.customer_id === updatedCustomer.customer_id
-              ? updatedCustomer
-              : cust
-          )
-        );
-      }
-    });
-
-    // Listener for customer deletions
-    socket.on("delete:customers", (deletedCustomer) => {
-      // update customerData state by using filter method to update array
-      setCustomerData((prev) =>
-        prev.filter((cust) => cust.customer_id !== deletedCustomer.customer_id)
-      );
-    });
-
-    // Clean up the listeners when the component unmounts
-    return () => {
-      socket.off("update:customers");
-      socket.off("delete:customers");
-    };
-  }, []);
-
-  // useEffect listener function to communicate with companies table in our database
-  useEffect(() => {
-    // Listener for company updates
-    socket.on("update:companies", (updatedCompany) => {
-      console.log("Socket on!!")
-
-      if (Array.isArray(updatedCompany)) {
-        getTable("companies");
-      } else {
-        setCompanyData((prev) =>
-          prev.map((company) =>
-            company.customer_id === updatedCompany.customer_id
-              ? updatedCompany
-              : company
-          )
-        );
-      }
-    });
-
-    // Listener for customer deletions
-    socket.on("delete:companies", (deletedCompany) => {
-
-      setCompanyData((prev) =>
-        prev.filter(
-          (company) => company.customer_id !== deletedCompany.customer_id
-        )
-      );
-    });
-    // Clean up the listeners when the component unmounts
-    return () => {
-      socket.off("update:companies");
-      socket.off("delete:companies");
-    };
-  }, []);
-
-  // Ensure that tables remain filtered using useEffect
-  React.useEffect(() => {
-    setFilteredCustomerData(
-      filterStatus === "All"
-        ? customerData
-        : customerData.filter(
-            (customer) => customer.customer_status === filterStatus
-          )
-    );
-  }, [customerData, filterStatus]);
-
-  React.useEffect(() => {
-    setFilteredCompanyData(
-      filterStatus === "All"
-        ? companyData
-        : companyData.filter(
-            (company) => company.customer_status === filterStatus
-          )
-    );
-  }, [companyData, filterStatus]);
-
-  // React useEffect that syncs up companies and customers databases when changes are made
-  // to the customers database
-  React.useEffect(() => {
-    // guard clause in case customerData and companyData do not exist or if the two
-    // arrays are of unequal length.  If this is not in place this useEffect will break the website.
-    // This is particularly the case if you delete all the data.
-    if (
-      !customerData ||
-      !companyData ||
-      customerData.length !== companyData.length
-    ) {
-      return;
+    const loadTables = async () => {
+      const tables = ["customers", "companies", "contacts", "locations", "quotes"];
+      await Promise.all(tables.map((table) => getTable(table)));
+      setDataLoaded(true);
     }
+    loadTables()
+  }, []);
 
-    // for loop to amend companies table in line with changes made to customer_name
-    // and customer_status in the customers table
-    for (let i = 0; i < customerData.length; i++) {
-      if (
-        companyData[i].company_name !==
-        `${customerData[i].customer_name} test${i+1}`
-      ) {
-        amend(
-          "companies",
-          companyData[i].customer_id,
-          "company_name",
-          `${customerData[i].customer_name} test${i+1}`
-        );
-      }
-      if (customerData[i].customer_status !== companyData[i].customer_status) {
-        amend(
-          "companies",
-          companyData[i].customer_id,
-          "customer_status",
-          customerData[i].customer_status
-        );
-      }
-    }
-  }, [customerData, companyData]);
+  // useEffects to enable socket event listeners for updating and deleting data from the tables
+  useTableSocket(socket, "customers", setCustomerData, getTable, dataLoaded);
+  useTableSocket(socket, "companies", setCompanyData, getTable, dataLoaded);
+  useTableSocket(socket, "contacts", setContactData, getTable, dataLoaded);
+  useTableSocket(socket, "locations", setLocationData, getTable, dataLoaded);
+  useTableSocket(socket, "quotes", setQuoteData, getTable, dataLoaded);
 
+  // useEffects to ensure that tables remain filtered using useEffect
+  useFilterTables(customerData, setFilteredCustomerData, filterStatus, dataLoaded);
+  useFilterTables(companyData, setFilteredCompanyData, filterStatus, dataLoaded);
+  useFilterTables(contactData, setFilteredContactData, filterStatus, dataLoaded);
+  useFilterTables(locationData, setFilteredLocationData, filterStatus, dataLoaded);
+  useFilterTables(quoteData, setFilteredQuoteData, filterStatus, dataLoaded);
+
+  // useEffect to syncs customer_name across all tables if it is altered in customers table
+  useSyncCustomerName(customerData, companyData, contactData, locationData, quoteData, amend, dataLoaded);
+  
+  // useEffect to sync status if it is altered in customers table
+  useSyncCustomerStatus(customerData, companyData, contactData, locationData, quoteData, amend, dataLoaded);
+  
   // Select customer ID.  Radio button handler function
   function selectId(id) {
     customerIdRef.current = id;
@@ -219,6 +127,16 @@ function App() {
       setCompanyData(
         companyData.filter((company) => company.customer_id !== id)
       );
+      setContactData (
+        contactData.filter((contact) => contact.customer_id !== id)
+      );
+      setLocationData (
+        locationData.filter((location) => location.customer_id !== id)
+      );
+      setQuoteData (
+        quoteData.filter((quote) => quote.customer_id !== id)
+      );
+
     } catch (err) {
       console.error(`Error deleting customer: ${err.message}`);
     } finally {
@@ -262,7 +180,7 @@ function App() {
 
     // Set a new timeout for database update
     debounceTimeoutsRef.current[id] = setTimeout(() => {
-      amend(table, id, column, value); // Update Firestore
+      amend(table, id, column, value); // Update Database
     }, 300); // 300ms debounce time
   };
 
@@ -271,12 +189,12 @@ function App() {
     setTempText((prev) => ({
       ...prev,
       [id]: {
-        ...prev[id], // Initialize `id` if it doesn't exist
+        ...prev[id], // Initialise `id` if it doesn't exist
         [column]: value,
       },
     }));
 
-    // Debounce the actual update to Firestore
+    // Debounce the actual update to database
     debounceUpdate(table, id, column, value);
   };
 
@@ -318,8 +236,33 @@ function App() {
         rowColour={rowColour}
       />
     ),
-    Contact: <Contact />,
-    Locations: <Locations />,
+    Contact: (
+      <Contact
+        contactData={filteredContactData}
+        handleUpdate={handleUpdate}
+        handlePaste={handlePaste}
+        tempText={tempText}
+        rowColour={rowColour}
+      />
+    ),
+    Locations: (
+      <Locations 
+        locationData={filteredLocationData}
+        handleUpdate={handleUpdate}
+        handlePaste={handlePaste}
+        tempText={tempText}
+        rowColour={rowColour}
+      />
+    ),
+    Quotes : (
+      <Quotes 
+        quoteData={filteredQuoteData}
+        handleUpdate={handleUpdate}
+        handlePaste={handlePaste}
+        tempText={tempText}
+        rowColour={rowColour}
+      />
+    ),
     Deals: (
       <CustomerTable
         customerData={filteredCustomerData}
@@ -345,8 +288,6 @@ function App() {
   // Below elements are returned by app function.
   // 1. The TableHeader component is returned and its props are defined and passed to the component.
   // 2. The CustomerTable component is returned and its props are defined and passed to the component.
-
-  console.log(process.env.REACT_APP_SOCKET_URL);
 
   return (
     <div>

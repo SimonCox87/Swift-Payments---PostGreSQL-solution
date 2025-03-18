@@ -29,6 +29,12 @@ function Header({ setPage, page }) {
       >
         Contact
       </h2>
+      <h2
+        onClick={() => setPage("Quotes")}
+        style={{ color: page === "Quotes" && "RGB(29, 176, 233)" }}
+      >
+        Quotes
+      </h2>
     </div>
   );
 }
