@@ -23,12 +23,13 @@ const useTableSocket = (socket, tableName, setData, getTable, dataLoaded) => {
         );
       }
     };
+
     // define the remove function defined in the websocket event
     const remove = (deletedData) => {
       // filter out deleted customer  
       setData((prev) =>
         prev.filter((item) => item.customer_id !== deletedData.customer_id)
-        );
+      );
     };
 
     // listening for socket events

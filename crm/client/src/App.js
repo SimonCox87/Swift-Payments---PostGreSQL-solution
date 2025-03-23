@@ -13,7 +13,7 @@ import useFilterTables from "./hooks/filterTables.js";
 import useSyncCustomerName from "./hooks/syncCustomerName.js";
 import useSyncCustomerStatus from "./hooks/syncCustomerStatus.js";
 
-// Create our main App function, which holds our data, functions and basic html structure for our
+// Create our main App functiEngon, which holds our data, functions and basic html structure for our
 // components.  Also returns jsx for our app.
 function App() {
   // React use States.  Contain an array and a setter function.  When these states are changed using their
@@ -80,6 +80,7 @@ function App() {
   }, []);
 
   // useEffects to enable socket event listeners for updating and deleting data from the tables
+  // covert the below calls into a forEach loop.  I think that this might be more in accordance with the React style.
   useTableSocket(socket, "customers", setCustomerData, getTable, dataLoaded);
   useTableSocket(socket, "companies", setCompanyData, getTable, dataLoaded);
   useTableSocket(socket, "contacts", setContactData, getTable, dataLoaded);
@@ -121,6 +122,9 @@ function App() {
         method: "DELETE",
       });
 
+      // Put this into a table and then run a loop over it.  e.g.
+      // [customerData, ... ,quoteData].forEach((table) => table.filter((i) => i.table.customer_id !== id))
+
       setCustomerData(
         customerData.filter((customer) => customer.customer_id !== id)
       );
@@ -148,10 +152,20 @@ function App() {
 
   // Function to add new customer record to the database.  Ready for the user to add the data
   async function add() {
+    setDataLoaded(false);
     try {
       await fetch("http://localhost:5001/customers/", {
         method: "POST",
       });
+      await Promise.all([
+        getTable("customers"),
+        getTable("companies"),
+        getTable("contacts"),
+        getTable("locations"),
+        getTable("quotes")
+      ]);
+
+      setDataLoaded(true);
     } catch (err) {
       console.error(`Error adding customer: ${err.message}`);
     }

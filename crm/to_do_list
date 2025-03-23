@@ -1,0 +1,27 @@
+Tasks to complete
+
+1.  Edit the columns found in the deals/customer table.  Make sure it matches that of spreadsheet.
+
+2.  Check all tables to ensure that all relevant columns match those of the spreadsheet.  Once
+    this has been done run the installation file again to update all tables on postGresSQL.
+
+3.  Work on the Companies table.  Find out whether this is the table that contains the entries
+    for each customer?  So a company might own more than one site/shop.
+    a.  add a drop down menu into the companies component.  this drop down component will contain
+        all the company_names in the company data.  When the customer name is selected by the user
+        and the add button is clicked a new entry for that customer will be created in which the
+        user can then insert a new site.
+    b.  We need to amend the add function because the behaviour is different for how the generic
+        add function behaves currently.  When a new site is created a corresponding record needs
+        to be created with the same timestamp, customer_id and name.  This then needs to appear in
+        table underneath the existing site.
+    c.  This is going to break the logic of the existing syncCustomerName function.
+
+4.  Think about authorisation.  How should this be implemented?  Should I render this in React myself
+    using built-in hashlib libraries?  Are there other third party libraries/packages/services that 
+    have been designed for this purpose?  Should the passwords be kept in the CRM database or in a
+    separate database?
+
+5.  Refactoring of the backend.
+
+6.  Full review of the code.  Specifically the code located on the backend.
