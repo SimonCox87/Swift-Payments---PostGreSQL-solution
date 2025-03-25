@@ -25,15 +25,14 @@ function CustomerTable({
     <table>
       <thead>
         <tr>
-          <th>Company Name</th>
-          <th>Trading Name</th>
-          <th>Contact Name</th>
-          <th>Telephone Number</th>
-          <th>Email</th>
-          <th>Merchant ID (MID)</th>
-          <th>Bank Account Number</th>
+          <th>Deal Type</th>
+          <th>Locations</th>
+          <th>Contacts</th>
+          <th>Live Date</th>
+          <th>Expiry Date</th>
+          <th>Customer Name</th>
           <th>
-            Status
+            Customer Status
             <select
               id="statusFilter"
               value={filterStatus}
@@ -65,7 +64,109 @@ function CustomerTable({
                 type="text"
                 value={
                   (tempText[customer.customer_id] &&
-                    tempText[customer.customer_id].customer_name) ||
+                    tempText[customer.customer_id].deal_type) ||
+                  customer.deal_type
+                }
+                onChange={(e) =>
+                  handleUpdate(
+                    "customers",
+                    customer.customer_id,
+                    "deal_type",
+                    e.target.value
+                  )
+                }
+                onPaste={(e) =>
+                  handlePaste("customers", customer.customer_id, "deal_type", e)
+                }
+              />
+            </td>
+            <td>
+              <input
+                type="text"
+                value={
+                  (tempText[customer.customer_id] &&
+                    tempText[customer.customer_id].locations) ||
+                  customer.locations
+                }
+                onChange={(e) =>
+                  handleUpdate(
+                    "customers",
+                    customer.customer_id,
+                    "locations",
+                    e.target.value
+                  )
+                }
+                onPaste={(e) =>
+                  handlePaste("customers", customer.customer_id, "locations", e)
+                }
+              />
+            </td>
+            <td>
+              <input
+                type="text"
+                value={
+                  (tempText[customer.customer_id] &&
+                    tempText[customer.customer_id].contacts) ||
+                  customer.contacts
+                }
+                onChange={(e) =>
+                  handleUpdate(
+                    "customers",
+                    customer.customer_id,
+                    "contacts",
+                    e.target.value
+                  )
+                }
+                onPaste={(e) =>
+                  handlePaste("customers", customer.customer_id, "contacts", e)
+                }
+              />
+            </td>
+            <td>
+              <input
+                type="text"
+                value={
+                  (tempText[customer.customer_id] && tempText[customer.customer_id].live_date) ||
+                  customer.live_date
+                }
+                onChange={(e) =>
+                  handleUpdate(
+                    "customers",
+                    customer.customer_id,
+                    "live_date",
+                    e.target.value
+                  )
+                }
+                onPaste={(e) =>
+                  handlePaste("customers", customer.customer_id, "live_date", e)
+                }
+              />
+            </td>
+            <td>
+              <input
+                type="text"
+                value={
+                  (tempText[customer.customer_id] && tempText[customer.customer_id].expiry) ||
+                  customer.expiry
+                }
+                onChange={(e) =>
+                  handleUpdate(
+                    "customers",
+                    customer.customer_id,
+                    "expiry",
+                    e.target.value
+                  )
+                }
+                onPaste={(e) =>
+                  handlePaste("customers", customer.customer_id, "expiry", e)
+                }
+              />
+            </td>
+            <td>
+              <input
+                type="text"
+                value={
+                  (tempText[customer.customer_id] && tempText[customer.customer_id].customer_name) ||
                   customer.customer_name
                 }
                 onChange={(e) =>
@@ -78,128 +179,6 @@ function CustomerTable({
                 }
                 onPaste={(e) =>
                   handlePaste("customers", customer.customer_id, "customer_name", e)
-                }
-              />
-            </td>
-            <td>
-              <input
-                type="text"
-                value={
-                  (tempText[customer.customer_id] &&
-                    tempText[customer.customer_id].trading_name) ||
-                  customer.trading_name
-                }
-                onChange={(e) =>
-                  handleUpdate(
-                    "customers",
-                    customer.customer_id,
-                    "trading_name",
-                    e.target.value
-                  )
-                }
-                onPaste={(e) =>
-                  handlePaste("customers", customer.customer_id, "trading_name", e)
-                }
-              />
-            </td>
-            <td>
-              <input
-                type="text"
-                value={
-                  (tempText[customer.customer_id] &&
-                    tempText[customer.customer_id].contact_name) ||
-                  customer.contact_name
-                }
-                onChange={(e) =>
-                  handleUpdate(
-                    "customers",
-                    customer.customer_id,
-                    "contact_name",
-                    e.target.value
-                  )
-                }
-                onPaste={(e) =>
-                  handlePaste("customers", customer.customer_id, "contact_name", e)
-                }
-              />
-            </td>
-            <td>
-              <input
-                type="text"
-                value={
-                  (tempText[customer.customer_id] && tempText[customer.customer_id].tel_number) ||
-                  customer.tel_number
-                }
-                onChange={(e) =>
-                  handleUpdate(
-                    "customers",
-                    customer.customer_id,
-                    "tel_number",
-                    e.target.value
-                  )
-                }
-                onPaste={(e) =>
-                  handlePaste("customers", customer.customer_id, "tel_number", e)
-                }
-              />
-            </td>
-            <td>
-              <input
-                type="text"
-                value={
-                  (tempText[customer.customer_id] && tempText[customer.customer_id].email) ||
-                  customer.email
-                }
-                onChange={(e) =>
-                  handleUpdate(
-                    "customers",
-                    customer.customer_id,
-                    "email",
-                    e.target.value
-                  )
-                }
-                onPaste={(e) =>
-                  handlePaste("customers", customer.customer_id, "email", e)
-                }
-              />
-            </td>
-            <td>
-              <input
-                type="text"
-                value={
-                  (tempText[customer.customer_id] && tempText[customer.customer_id].merchant_id) ||
-                  customer.merchant_id
-                }
-                onChange={(e) =>
-                  handleUpdate(
-                    "customers",
-                    customer.customer_id,
-                    "merchant_id",
-                    e.target.value
-                  )
-                }
-                onPaste={(e) =>
-                  handlePaste("customers", customer.customer_id, "merchant_id", e)
-                }
-              />
-            </td>
-            <td>
-              <input
-                type="text"
-                value={
-                  (tempText[customer.customer_id] && tempText[customer.customer_id].bank_number) ||
-                  customer.bank_number
-                }
-                onChange={(e) =>
-                  handleUpdate(
-                    "customers",
-                    customer.customer_id,
-                    "bank_number",
-                    e.target.value
-                  )
-                }
-                onPaste={(e) =>
-                  handlePaste("customers", customer.customer_id, "bank_number", e)
                 }
               />
             </td>

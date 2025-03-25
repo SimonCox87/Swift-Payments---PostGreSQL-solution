@@ -12,16 +12,34 @@ function Companies({
     <table>
       <thead>
         <tr>
-          <th>Name</th>
-          <th>Category</th>
-          <th>Number</th>
-          <th>User</th>
-          <th>Address</th>
+          <th>Entity Type</th>
+          <th>Company Name</th>
+          <th>Legal Name</th>
+          <th>Contacts</th>
+          <th>Deals</th>
+          <th>Locations</th>
+          <th>Quotes</th>
+          <th>Registered Number</th>
+          <th>Date Commenced Trading</th>
+          <th>Postcode</th>
         </tr>
       </thead>
       <tbody>
         {companyData.map((company, index) => (
           <tr key={company.customer_id} className={rowColour(company.customer_status)}>
+            <td>
+              <input
+                type="text"
+                value={
+                  (tempText[company.customer_id] && tempText[company.customer_id].entity_type) ||
+                  company.entity_type
+                }
+                onChange={(e) =>
+                  handleUpdate("companies", company.customer_id, "entity_type", e.target.value)
+                }
+                onPaste={(e) => handlePaste("companies", company.customer_id, "entity_type", e)}
+              />
+            </td>
             <td>
               <input
                 type="text"
@@ -39,19 +57,19 @@ function Companies({
               <input
                 type="text"
                 value={
-                  (tempText[company.customer_id] && tempText[company.customer_id].category) ||
-                  company.category
+                  (tempText[company.customer_id] && tempText[company.customer_id].legal_name) ||
+                  company.legal_name
                 }
                 onChange={(e) =>
                   handleUpdate(
                     "companies",
                     company.customer_id,
-                    "category",
+                    "legal_name",
                     e.target.value
                   )
                 }
                 onPaste={(e) =>
-                  handlePaste("companies", company.customer_id, "category", e)
+                  handlePaste("companies", company.customer_id, "legal_name", e)
                 }
               />
             </td>
@@ -59,19 +77,19 @@ function Companies({
               <input
                 type="text"
                 value={
-                  (tempText[company.cuustomer_id] && tempText[company.customer_id].company_number) ||
-                  company.company_number
+                  (tempText[company.cuustomer_id] && tempText[company.customer_id].contact) ||
+                  company.contact
                 }
                 onChange={(e) =>
                   handleUpdate(
                     "companies",
                     company.customer_id,
-                    "company_number",
+                    "contact",
                     e.target.value
                   )
                 }
                 onPaste={(e) =>
-                  handlePaste("companies", company.customer_id, "company_number", e)
+                  handlePaste("companies", company.customer_id, "contact", e)
                 }
               />
             </td>
@@ -79,14 +97,14 @@ function Companies({
               <input
                 type="text"
                 value={
-                  (tempText[company.customer_id] && tempText[company.customer_id].company_user) ||
-                  company.company_user
+                  (tempText[company.customer_id] && tempText[company.customer_id].deals) ||
+                  company.deals
                 }
                 onChange={(e) =>
-                  handleUpdate("companies", company.customer_id, "company_user", e.target.value)
+                  handleUpdate("companies", company.customer_id, "deals", e.target.value)
                 }
                 onPaste={(e) =>
-                  handlePaste("companies", company.customer_id, "company_user", e)
+                  handlePaste("companies", company.customer_id, "deals", e)
                 }
               />
             </td>
@@ -94,19 +112,99 @@ function Companies({
               <input
                 type="text"
                 value={
-                  (tempText[company.customer_id] && tempText[company.customer_id].company_address) ||
-                  company.company_address
+                  (tempText[company.customer_id] && tempText[company.customer_id].locations) ||
+                  company.locations
                 }
                 onChange={(e) =>
                   handleUpdate(
                     "companies",
                     company.customer_id,
-                    "company_address",
+                    "locations",
                     e.target.value
                   )
                 }
                 onPaste={(e) =>
-                  handlePaste("companies", company.customer_id, "company_address", e)
+                  handlePaste("companies", company.customer_id, "locations", e)
+                }
+              />
+            </td>
+            <td>
+              <input
+                type="text"
+                value={
+                  (tempText[company.customer_id] && tempText[company.customer_id].quotes) ||
+                  company.quotes
+                }
+                onChange={(e) =>
+                  handleUpdate(
+                    "companies",
+                    company.customer_id,
+                    "quotes",
+                    e.target.value
+                  )
+                }
+                onPaste={(e) =>
+                  handlePaste("companies", company.customer_id, "quotes", e)
+                }
+              />
+            </td>
+            <td>
+              <input
+                type="text"
+                value={
+                  (tempText[company.customer_id] && tempText[company.customer_id].registered_number) ||
+                  company.registered_number
+                }
+                onChange={(e) =>
+                  handleUpdate(
+                    "companies",
+                    company.customer_id,
+                    "registered_number",
+                    e.target.value
+                  )
+                }
+                onPaste={(e) =>
+                  handlePaste("companies", company.customer_id, "registered_number", e)
+                }
+              />
+            </td>
+            <td>
+              <input
+                type="text"
+                value={
+                  (tempText[company.customer_id] && tempText[company.customer_id].date_commenced_trading) ||
+                  company.date_commenced_trading
+                }
+                onChange={(e) =>
+                  handleUpdate(
+                    "companies",
+                    company.customer_id,
+                    "date_commenced_trading",
+                    e.target.value
+                  )
+                }
+                onPaste={(e) =>
+                  handlePaste("companies", company.customer_id, "date_commenced_trading", e)
+                }
+              />
+            </td>
+            <td>
+              <input
+                type="text"
+                value={
+                  (tempText[company.customer_id] && tempText[company.customer_id].postcode) ||
+                  company.postcode
+                }
+                onChange={(e) =>
+                  handleUpdate(
+                    "companies",
+                    company.customer_id,
+                    "postcode",
+                    e.target.value
+                  )
+                }
+                onPaste={(e) =>
+                  handlePaste("companies", company.customer_id, "postcode", e)
                 }
               />
             </td>

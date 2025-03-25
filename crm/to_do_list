@@ -1,7 +1,7 @@
 Tasks to complete
 
-1.  Edit the columns found in the deals/customer table.  Make sure it matches that of spreadsheet.
-
+~~1.  Edit the columns found in the deals/customer table.  Make sure it matches that of spreadsheet.
+~~
 2.  Check all tables to ensure that all relevant columns match those of the spreadsheet.  Once
     this has been done run the installation file again to update all tables on postGresSQL.
 

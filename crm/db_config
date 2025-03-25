@@ -1,0 +1,25 @@
+#!/bin/bash
+
+configure_crm_db() {
+    local db_config_path="$1"
+
+    echo "Configuring crm database ..."
+
+    sudo -u postgres psql <<EOF
+
+\c crm
+\i '$db_config_path'
+EOF
+
+    echo "PostgreSQL setup complete. Database 'crm' created with data from init.sql."
+}
+
+DB_SQL_PATH="$(pwd)/init.sql"
+
+configure_crm_db "$DB_SQL_PATH"
+
+echo "Database configuration is complete!"
+
+
+
+
