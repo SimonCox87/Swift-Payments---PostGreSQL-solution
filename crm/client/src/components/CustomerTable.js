@@ -166,19 +166,19 @@ function CustomerTable({
               <input
                 type="text"
                 value={
-                  (tempText[customer.customer_id] && tempText[customer.customer_id].customer_name) ||
-                  customer.customer_name
+                  (tempText[customer.customer_id] && tempText[customer.customer_id].company_name) ||
+                  customer.company_name
                 }
                 onChange={(e) =>
                   handleUpdate(
                     "customers",
                     customer.customer_id,
-                    "customer_name",
+                    "company_name",
                     e.target.value
                   )
                 }
                 onPaste={(e) =>
-                  handlePaste("customers", customer.customer_id, "customer_name", e)
+                  handlePaste("customers", customer.customer_id, "company_name", e)
                 }
               />
             </td>

@@ -13,13 +13,13 @@ CREATE TABLE customers (
     contact VARCHAR(255),
     live_date VARCHAR(10),
     expiry VARCHAR(10),
-    customer_name VARCHAR(255),
+    company_name VARCHAR(255),
     customer_status VARCHAR(11) DEFAULT 'pending',
     created BIGINT DEFAULT (EXTRACT(EPOCH FROM CURRENT_TIMESTAMP) * 1000)
 );
 
 -- Insert data into the `customers` table (before inserting into dependent tables)
-INSERT INTO customers (customer_name, customer_status, created)
+INSERT INTO customers (company_name, customer_status, created)
 VALUES
 ('Sainsbury''s',  'Live', 1733698239167),
 ('Waitrose', 'Declined', 1733704031660),
@@ -181,7 +181,7 @@ CREATE TABLE quotes (
 );
 
 -- Insert data into the companies table
-INSERT INTO companies (customer_id, created, company_name, customer_status)
+INSERT INTO companies (customer_id, created, customer_status, company_name)
 VALUES
 (6, 1733773650441, 'Live', 'Aldi test4'),
 (3, 1733775508446, 'Application', 'Iceland test5'),
@@ -191,7 +191,7 @@ VALUES
 (5, 1733703716624, 'Application', 'Tesco test1');
 
 -- Insert data into the contacts table
-INSERT INTO contacts (customer_id, created, company_name, customer_status)
+INSERT INTO contacts (customer_id, created, customer_status, company_name)
 VALUES
 (6, 1733773650441, 'Live', 'Aldi test4'),
 (3, 1733775508446, 'Application', 'Iceland test5'),
@@ -219,3 +219,4 @@ VALUES
 (2, 1733704031660, 'Declined', 'Waitrose test2'),
 (4, 1733705721034, 'Prospect', 'Lidl test3'),
 (5, 1733703716624, 'Application', 'Tesco test1');
+

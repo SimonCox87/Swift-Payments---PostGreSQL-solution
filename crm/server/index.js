@@ -3,6 +3,8 @@ const http = require("http");
 const { Server } = require("socket.io");
 const cors = require("cors");
 const pool = require("./db");
+const updateRecord = require("./backend_logic/updateRecord");
+
 
 // initialise an Express application instance
 const app = express();
@@ -166,58 +168,10 @@ app.get("/quotes", async (req, res) => {
   }
 });
 
-// update handler function
-const updateRecord = async (tableName, allowedColumns, id, updates, pool, io) => {
-  // whitelist of table names in order to validate tableName. control data being 
-  // pushed to the database
-  const allowedTables = ["customers", "companies", "contacts", "locations", "quotes"];
-
-  // validate tableName against the whitelist of table names
-  if (!allowedTables.includes(tableName)) {
-    throw new Error("Invalid table name");
-  }
-
-  // validate columns
-  const columnArray = Object.keys(updates);
-
-  // check column array actually contains updates
-  if (columnArray.length === 0) {
-    throw new Error("No valid columns provided for update")
-  }
-  // get the name of the column so that we can place it in the query
-  const column = columnArray[0];
-
-  // check that the columns to be updated are allowed
-  if (!allowedColumns.includes(column)) {
-    throw new Error("No valid columns provided for update");
-  };
-
-  // create the values array for the query
-  const values = Object.values(updates);
-  
-  // push the id to the values array so it can be used in the query
-  values.push(id);
-  
-  // construct the query string
-  const query = `UPDATE ${tableName} SET ${column} = $1 WHERE customer_id = $2 RETURNING *`;
-
-  // execute the query
-  const result = await pool.query(query, values);
-  
-  if (result.rowCount === 0) {
-    throw new Error("Record not found");
-  }
-
-  // Emit WebSocket event for the updated table
-  io.emit(`update:${tableName}`, result.rows[0]);
-
-  return result.rows[0];
-};
-
 // Put Route for Customers table
 app.put("/customers/:id", async (req, res) => {
   const allowedColumns = [
-    "customer_name",
+    "company_name",
     "trading_name",
     "contact_name",
     "tel_number",
@@ -234,7 +188,7 @@ app.put("/customers/:id", async (req, res) => {
     const updates = req.body;
     console.log(updates);
     // run the updateRecord handler function with parameters
-    const updateCustomers = await updateRecord(
+    const updatedCustomers = await updateRecord(
       "customers",
       allowedColumns,
       id,
@@ -242,7 +196,7 @@ app.put("/customers/:id", async (req, res) => {
       pool,
       io
     );
-    res.json(updateCustomers);
+    res.json(updatedCustomers);
   } catch (err) {
     console.error(err.message);
     res.status(400).json({ err: err.message });
@@ -264,7 +218,7 @@ app.put("/companies/:id", async (req, res) => {
     const { id } = req.params;
     const updates = req.body;
     console.log(updates);
-    const updateCompanies = await updateRecord(
+    const updatedCompanies = await updateRecord(
       "companies",
       allowedColumns,
       id,
@@ -272,7 +226,7 @@ app.put("/companies/:id", async (req, res) => {
       pool,
       io
     );
-    res.json(updateCompanies);
+    res.json(updatedCompanies);
   } catch (err) {
     console.error(err.message);
     res.status(400).json({ err: err.message });
@@ -308,7 +262,7 @@ app.put("/contacts/:id", async (req, res) => {
     const { id } = req.params;
     const updates = req.body;
     console.log(updates);
-    const updateContacts = await updateRecord(
+    const updatedContacts = await updateRecord(
       "contacts",
       allowedColumns,
       id,
@@ -316,7 +270,7 @@ app.put("/contacts/:id", async (req, res) => {
       pool,
       io
     );
-    res.json(updateContacts);
+    res.json(updatedContacts);
   } catch (err) {
     console.error(err.message);
     res.status(400).json({ err: err.message });
@@ -356,7 +310,7 @@ app.put("/locations/:id", async (req, res) => {
     const { id } = req.params;
     const updates = req.body;
     console.log(updates);
-    const updateLocations = await updateRecord(
+    const updatedLocations = await updateRecord(
       "locations",
       allowedColumns,
       id,
@@ -364,7 +318,7 @@ app.put("/locations/:id", async (req, res) => {
       pool,
       io
     );
-    res.json(updateLocations);
+    res.json(updatedLocations);
   } catch (err) {
     console.error(err.message);
     res.status(400).json({ err: err.message });
@@ -400,7 +354,7 @@ app.put("/quotes/:id", async (req, res) => {
     const { id } = req.params;
     const updates = req.body;
     console.log(updates);
-    const updateQuotes = await updateRecord(
+    const updatedQuotes = await updateRecord(
       "quotes",
       allowedColumns,
       id,
@@ -408,7 +362,7 @@ app.put("/quotes/:id", async (req, res) => {
       pool,
       io
     );
-    res.json(updateQuotes);
+    res.json(updatedQuotes);
   } catch (err) {
     console.error(err.message);
     res.status(400).json({ err: err.message });

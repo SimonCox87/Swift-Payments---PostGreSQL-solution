@@ -10,8 +10,6 @@ import Quotes from "./components/Quotes.js"
 import socket from "./socket.js";
 import useTableSocket from "./hooks/tableSocket.js";
 import useFilterTables from "./hooks/filterTables.js";
-import useSyncCustomerName from "./hooks/syncCustomerName.js";
-import useSyncCustomerStatus from "./hooks/syncCustomerStatus.js";
 
 // Create our main App functiEngon, which holds our data, functions and basic html structure for our
 // components.  Also returns jsx for our app.
@@ -93,13 +91,7 @@ function App() {
   useFilterTables(contactData, setFilteredContactData, filterStatus, dataLoaded);
   useFilterTables(locationData, setFilteredLocationData, filterStatus, dataLoaded);
   useFilterTables(quoteData, setFilteredQuoteData, filterStatus, dataLoaded);
-
-  // useEffect to syncs customer_name across all tables if it is altered in customers table
-  useSyncCustomerName(customerData, companyData, contactData, locationData, quoteData, amend, dataLoaded);
-  
-  // useEffect to sync status if it is altered in customers table
-  useSyncCustomerStatus(customerData, companyData, contactData, locationData, quoteData, amend, dataLoaded);
-  
+    
   // Select customer ID.  Radio button handler function
   function selectId(id) {
     customerIdRef.current = id;
@@ -173,6 +165,7 @@ function App() {
 
   // Function to amend existing customer data.
   async function amend(table, id, column, value) {
+    setDataLoaded(false);
     try {
       const body = { [column]: value };
       await fetch(`http://localhost:5001/${table}/${id}`, {
@@ -180,6 +173,14 @@ function App() {
         headers: { "Content-type": "application/json" },
         body: JSON.stringify(body),
       });
+      await Promise.all([
+        getTable("customers"),
+        getTable("companies"),
+        getTable("contacts"),
+        getTable("locations"),
+        getTable("quotes")
+      ]);
+      setDataLoaded(true);
     } catch (err) {
       console.error(`Error updating document: ${err.message}`);
     }
