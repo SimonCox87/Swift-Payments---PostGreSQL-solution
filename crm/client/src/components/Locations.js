@@ -12,8 +12,8 @@ function Locations({
     <table>
       <thead>
         <tr>
-          <th>Name</th>
           <th>Trading Name</th>
+          <th>Legal Name</th>
           <th>Address 1</th>
           <th>Address 2</th>
           <th>Town/City</th>
@@ -40,6 +40,19 @@ function Locations({
       <tbody>
         {locationData.map((location, index) => (
           <tr key={location.customer_id} className={rowColour(location.customer_status)}>
+             <td>
+              <input
+                type="text"
+                value={
+                  (tempText[location.customer_id] && tempText[location.customer_id].trading_name) ||
+                  location.trading_name
+                }
+                onChange={(e) =>
+                  handleUpdate("locations", location.customer_id, "trading_name", e.target.value)
+                }
+                onPaste={(e) => handlePaste("locations", location.customer_id, "trading_name", e)}
+              />
+            </td>
             <td>
               <input
                 type="text"
@@ -51,19 +64,6 @@ function Locations({
                   handleUpdate("locations", location.customer_id, "company_name", e.target.value)
                 }
                 onPaste={(e) => handlePaste("locations", location.customer_id, "company_name", e)}
-              />
-            </td>
-            <td>
-              <input
-                type="text"
-                value={
-                  (tempText[location.customer_id] && tempText[location.customer_id].trading_name) ||
-                  location.trading_name
-                }
-                onChange={(e) =>
-                  handleUpdate("locations", location.customer_id, "trading_name", e.target.value)
-                }
-                onPaste={(e) => handlePaste("locations", location.customer_id, "trading_name", e)}
               />
             </td>
             <td>

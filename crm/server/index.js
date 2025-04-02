@@ -52,70 +52,104 @@ io.on("connection", (socket) => {
 // POST
 app.post("/customers", async (req, res) => {
   try {
-    // Begin the transaction.  We use this command because it ensures that on completion
-    // updates are pushed as a batch and if any of them fail no updates are committed at all.
-    // Ensures "atmoicity" ie updates are not pushed piecemeal.
     await pool.query("BEGIN");
 
-    // Insert a new customer in customers table and retrieve customer_id, customer_status
-    // and created for insertion into companies table
     const newCustomer = await pool.query(
       "INSERT INTO customers DEFAULT VALUES RETURNING customer_id, customer_status, created"
     );
 
-    // Create the variables to be inserted into companies table to be passed as values in the
-    // next query made to the database.
     const { customer_id, customer_status, created } = newCustomer.rows[0];
 
-    // Insert into companies using the retrieved data
     await pool.query(
       "INSERT INTO companies (customer_id, customer_status, created) VALUES ($1, $2, $3)",
       [customer_id, customer_status, created]
     );
 
-    await pool.query(
-      "INSERT INTO contacts (customer_id, customer_status, created) VALUES ($1, $2, $3)",
-      [customer_id, customer_status, created]
-    );
-
-    await pool.query(
-      "INSERT INTO locations (customer_id, customer_status, created) VALUES ($1, $2, $3)",
-      [customer_id, customer_status, created]
-    );
-
-    await pool.query(
-      "INSERT INTO quotes (customer_id, customer_status, created) VALUES ($1, $2, $3)",
-      [customer_id, customer_status, created]
-    );
-    // Commit the transaction
     await pool.query("COMMIT");
 
-    //Get new tables, with newly added rows
     const updatedCustomersTable = await pool.query("SELECT * FROM customers");
     const updatedCompaniesTable = await pool.query("SELECT * FROM companies");
-    const updatedContactsTable = await pool.query("SELECT * FROM contacts");
-    const updatedLocationsTable = await pool.query("SELECT * FROM locations");
-    const updatedQuotesTable = await pool.query("SELECT * FROM quotes");
 
-    // Emit the new customer to all connected clients
     io.emit("update:customers", updatedCustomersTable.rows);
     io.emit("update:companies", updatedCompaniesTable.rows);
-    io.emit("update:contacts", updatedContactsTable.rows);
-    io.emit("update:locations", updatedLocationsTable.rows);
-    io.emit("update:quotes", updatedQuotesTable.rows);
 
-    // Respond to the client.  used in postman to test api
     res.status(201).json({
-      message: "Customers, companies, contacts, locations and quotes tables created successfully",
+      message: "Row added to Customers and Companies tables",
       customer_id,
     });
+
   } catch (err) {
-    // Rollback the transaction on error to previous state
     await pool.query("ROLLBACK");
     console.error(err.message);
     res.status(500).json({ error: "An error occurred" });
   }
 });
+// app.post("/customers", async (req, res) => {
+//   try {
+//     // Begin the transaction.  We use this command because it ensures that on completion
+//     // updates are pushed as a batch and if any of them fail no updates are committed at all.
+//     // Ensures "atmoicity" ie updates are not pushed piecemeal.
+//     await pool.query("BEGIN");
+
+//     // Insert a new customer in customers table and retrieve customer_id, customer_status
+//     // and created for insertion into companies table
+//     const newCustomer = await pool.query(
+//       "INSERT INTO customers DEFAULT VALUES RETURNING customer_id, customer_status, created"
+//     );
+
+//     // Create the variables to be inserted"o companies table to be passed as values in the
+//     // next query made to the database.
+//     const { customer_id, customer_status, created } = newCustomer.rows[0];
+
+//     // Insert into companies using the retrieved data
+//     await pool.query(
+//       "INSERT INTO companies (customer_id, customer_status, created) VALUES ($1, $2, $3)",
+//       [customer_id, customer_status, created]
+//     );
+
+//     await pool.query(
+//       "INSERT INTO contacts (customer_id, customer_status, created) VALUES ($1, $2, $3)",
+//       [customer_id, customer_status, created]
+//     );
+
+//     await pool.query(
+//       "INSERT INTO locations (customer_id, customer_status, created) VALUES ($1, $2, $3)",
+//       [customer_id, customer_status, created]
+//     );
+
+//     await pool.query(
+//       "INSERT INTO quotes (customer_id, customer_status, created) VALUES ($1, $2, $3)",
+//       [customer_id, customer_status, created]
+//     );
+//     // Commit the transaction
+//     await pool.query("COMMIT");
+
+//     //Get new tables, with newly added rows
+//     const updatedCustomersTable = await pool.query("SELECT * FROM customers");
+//     const updatedCompaniesTable = await pool.query("SELECT * FROM companies");
+//     const updatedContactsTable = await pool.query("SELECT * FROM contacts");
+//     const updatedLocationsTable = await pool.query("SELECT * FROM locations");
+//     const updatedQuotesTable = await pool.query("SELECT * FROM quotes");
+
+//     // Emit the new customer to all connected clients
+//     io.emit("update:customers", updatedCustomersTable.rows);
+//     io.emit("update:companies", updatedCompaniesTable.rows);
+//     io.emit("update:contacts", updatedContactsTable.rows);
+//     io.emit("update:locations", updatedLocationsTable.rows);
+//     io.emit("update:quotes", updatedQuotesTable.rows);
+
+//     // Respond to the client.  used in postman to test api
+//     res.status(201).json({
+//       message: "Customers, companies, contacts, locations and quotes tables created successfully",
+//       customer_id,
+//     });
+//   } catch (err) {
+//     // Rollback the transaction on error to previous state
+//     await pool.query("ROLLBACK");
+//     console.error(err.message);
+//     res.status(500).json({ error: "An error occurred" });
+//   }
+// });
 
 // get customers table
 app.get("/customers", async (req, res) => {
@@ -172,12 +206,11 @@ app.get("/quotes", async (req, res) => {
 app.put("/customers/:id", async (req, res) => {
   const allowedColumns = [
     "company_name",
-    "trading_name",
-    "contact_name",
-    "tel_number",
-    "email",
-    "merchant_id",
-    "bank_number",
+    "deal_type",
+    "locations",
+    "contact",
+    "live_date",
+    "expiry",
     "customer_status",
   ];
 
@@ -207,11 +240,26 @@ app.put("/customers/:id", async (req, res) => {
 app.put("/companies/:id", async (req, res) => {
   const allowedColumns = [
     "company_name",
-    "category",
-    "company_number",
-    "company_user",
-    "company_address",
-    "customer_status",
+    "entity_type",
+    "legal_name",
+    "contact",
+    "deals",
+    "locations",
+    "quotes",
+    "registered_number",
+    "vat_number",
+    "date_commenced_trading",
+    "registered_address_line_1",
+    "registered_address_line_2",
+    "city",
+    "postcode",
+    "sic_code",
+    "country",
+    "alternative_correspondence_address_line_1",
+    "alternative_correspondence_address_line_2",
+    "alternative_town",
+    "alternative_post_code",
+    "alternative_country"    
   ];
 
   try {
@@ -238,8 +286,7 @@ app.put("/contacts/:id", async (req, res) => {
   const allowedColumns = [
     "company_name",
     "customer_status",
-    "first_name",
-    "last_name",
+    "customer_name",
     "title",
     "position",
     "contact_number",
@@ -249,13 +296,27 @@ app.put("/contacts/:id", async (req, res) => {
     "date_of_birth",
     "percentage_owned",
     "job_role",
-    "address_1",
-    "adress_2",
-    "town_city",
-    "postcode",
-    "country",
-    "years_at_current_address",
-    "months_at_current_address",
+    "residential_address_line_1",
+    "residential_address_line_2",
+    "residential_address_town_city",
+    "residential_address_postcode",
+    "residential_address_country",
+    "residential_address_years_at_current_address",
+    "residential_address_months_at_current_address",
+    "previous_address_1_line_1",
+    "previous_address_1_line_2",
+    "previous_address_1_town_city",
+    "previous_address_1_postcode",
+    "previous_address_1_country",
+    "previous_address_1_years_at_current_address",
+    "previous_address_1_months_at_current_address",
+    "previous_address_2_line_1",
+    "previous_address_2_line_2",
+    "previous_address_2_town_city",
+    "previous_address_2_postcode",
+    "previous_address_2_country",
+    "previous_address_2_years_at_current_address",
+    "previous_address_2_months_at_current_address",
   ];
 
   try {
@@ -303,7 +364,35 @@ app.put("/locations/:id", async (req, res) => {
     "average_transaction",
     "transaction_volume",
     "card_not_present",
-    "total_annual_turnover"
+    "total_annual_turnover",
+    "about_description",
+    "about_goods_third_party",
+    "deposits_accept_deposits_prior",
+    "deposits_percentage_goods_or_services_deposit",
+    "deposits_size_of_deposit_advance",
+    "deposits_average_time_advance_deposits_taken",
+    "deposits_average_time_advance_balance_taken",
+    "full_payment_accept_deposits_prior",
+    "full_payment_percentage_goods_or_services_deposit",
+    "full_payment_size_of_deposit_advance",
+    "full_payment_average_time_advance_balance_taken",
+    "guarantees_levy_charge",
+    "guarantees_separate_percentage_card_turnover",
+    "guarantees_average_length_guarantee",
+    "guarantees_percentage_goods_returned",
+    "guarantees_third_party",
+    "guarantees_third_party_provider_name",
+    "memberships_levy_charges",
+    "memberships_percentage_card_turnover",
+    "memberships_average_length",
+    "memberships_cost",
+    "location_stock_other_address",
+    "location_stock_address_line_1",
+    "location_stock_address_line_2",
+    "location_stock_town_city",
+    "location_stock_post_code",
+    "location_stock_country",
+    "additional_information"
   ];
 
   try {

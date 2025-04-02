@@ -12,9 +12,8 @@ function Contact({
     <table>
       <thead>
         <tr>
-          <th>Name</th>
-          <th>First Name</th>
-          <th>Last Name</th>
+          <th>Legal Name</th>
+          <th>Customer Name</th>
           <th>Title</th>
           <th>Position</th>
           <th>Contact Number</th>
@@ -53,39 +52,19 @@ function Contact({
               <input
                 type="text"
                 value={
-                  (tempText[contact.customer_id] && tempText[contact.customer_id].first_name) ||
-                  contact.first_name
+                  (tempText[contact.customer_id] && tempText[contact.customer_id].customer_name) ||
+                  contact.customer_name
                 }
                 onChange={(e) =>
                   handleUpdate(
                     "contacts",
                     contact.customer_id,
-                    "first_name",
+                    "customer_name",
                     e.target.value
                   )
                 }
                 onPaste={(e) =>
-                  handlePaste("contacts", contact.customer_id, "first_name", e)
-                }
-              />
-            </td>
-            <td>
-              <input
-                type="text"
-                value={
-                  (tempText[contact.cuustomer_id] && tempText[contact.customer_id].last_name) ||
-                  contact.last_name
-                }
-                onChange={(e) =>
-                  handleUpdate(
-                    "contacts",
-                    contact.customer_id,
-                    "last_name",
-                    e.target.value
-                  )
-                }
-                onPaste={(e) =>
-                  handlePaste("contacts", contact.customer_id, "last_name", e)
+                  handlePaste("contacts", contact.customer_id, "customer_name", e)
                 }
               />
             </td>

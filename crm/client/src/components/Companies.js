@@ -12,9 +12,8 @@ function Companies({
     <table>
       <thead>
         <tr>
-          <th>Entity Type</th>
-          <th>Company Name</th>
           <th>Legal Name</th>
+          <th>Entity Type</th>
           <th>Contacts</th>
           <th>Deals</th>
           <th>Locations</th>
@@ -31,6 +30,26 @@ function Companies({
               <input
                 type="text"
                 value={
+                  (tempText[company.customer_id] && tempText[company.customer_id].company_name) ||
+                  company.company_name
+                }
+                onChange={(e) =>
+                  handleUpdate(
+                    "companies",
+                    company.customer_id,
+                    "company_name",
+                    e.target.value
+                  )
+                }
+                onPaste={(e) =>
+                  handlePaste("companies", company.customer_id, "company_name", e)
+                }
+              />
+            </td>
+            <td>
+              <input
+                type="text"
+                value={
                   (tempText[company.customer_id] && tempText[company.customer_id].entity_type) ||
                   company.entity_type
                 }
@@ -40,39 +59,7 @@ function Companies({
                 onPaste={(e) => handlePaste("companies", company.customer_id, "entity_type", e)}
               />
             </td>
-            <td>
-              <input
-                type="text"
-                value={
-                  (tempText[company.customer_id] && tempText[company.customer_id].company_name) ||
-                  company.company_name
-                }
-                onChange={(e) =>
-                  handleUpdate("companies", company.customer_id, "company_name", e.target.value)
-                }
-                onPaste={(e) => handlePaste("companies", company.customer_id, "company_name", e)}
-              />
-            </td>
-            <td>
-              <input
-                type="text"
-                value={
-                  (tempText[company.customer_id] && tempText[company.customer_id].legal_name) ||
-                  company.legal_name
-                }
-                onChange={(e) =>
-                  handleUpdate(
-                    "companies",
-                    company.customer_id,
-                    "legal_name",
-                    e.target.value
-                  )
-                }
-                onPaste={(e) =>
-                  handlePaste("companies", company.customer_id, "legal_name", e)
-                }
-              />
-            </td>
+         
             <td>
               <input
                 type="text"

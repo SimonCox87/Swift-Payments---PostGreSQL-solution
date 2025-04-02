@@ -62,8 +62,7 @@ CREATE TABLE contacts (
     created BIGINT,
     customer_status VARCHAR(50),
     company_name VARCHAR(255),
-    first_name VARCHAR(255),
-    last_name VARCHAR(255),
+    customer_name VARCHAR(255),
     title VARCHAR(12),
     position VARCHAR(255),
     contact_number VARCHAR(15),
@@ -154,7 +153,7 @@ CREATE TABLE locations (
     additional_information VARCHAR(255)
 );
 
--- Create the `quotes` table
+-- Create the `quotes` table        
 CREATE TABLE quotes (
     customer_id INT PRIMARY KEY REFERENCES customers(customer_id) ON DELETE CASCADE,
     created BIGINT,

@@ -1,12 +1,47 @@
 Tasks to complete
 
-~~1.  Edit the columns found in the deals/customer table.  Make sure it matches that of spreadsheet.
-~~
-2.  Check all tables to ensure that all relevant columns match those of the spreadsheet.  Once
-    this has been done run the installation file again to update all tables on postGresSQL.
+Work on the relationships between the companies table and the locations table.
+Implement this first
+ - Add in  companies table adds a new row to the companies table
+ - Add in locations adds a new row to locations but also a new row to companies if
+   company is not already present in companies.
+
+ Next
+ - Add conditional logic - if company_name in locations == company_name in companies
+   then we do not create an additional row in companies table as this row is already
+   present
+
+Alternative is for the add function to just create one row per table.  So the add function
+in the companies table creates one new row in the companies table and the add function in 
+the locations table just creates a new row in the locations table. What we do is we create a
+useEffect in React or a trigger or associated SQL based function that adds in a new row in companies
+if the location table has a row with a company_name which is not already in the companies
+table.
+- The useEffect could be triggered by any changes to the locationData, which is contained in the 
+  locations table.  A function is triggered that adds a new row into the conpanies table and then
+  inserts the company_name value into the new database
+- This could be done inside the post api in the index.js file for /locations, but this would have to 
+  be researched.  If it is done in this manner the add function will have to take a parameter called
+  page, this parameter will be the useState page.
+- With the api calls research whether f-strings can be used for the paths for example with the
+  post call could be app.post(`${table}/`, asyc (req, res))
+
+
+locations table
+trading name is the first column and company name is the second column
+
+
+
+
+
+
+
+
+Need to add a selected column so that we can delete rows from certain tables
+
 
 3.  Work on the Companies table.  Find out whether this is the table that contains the entries
-    for each customer?  So a company might own more than one site/shop.
+    for each customer?  So a company might own more than one site/shop.  DONE - CORRECT TABLE FOR THIS IS LOCATIONS
     a.  add a drop down menu into the companies component.  this drop down component will contain
         all the company_names in the company data.  When the customer name is selected by the user
         and the add button is clicked a new entry for that customer will be created in which the
@@ -25,3 +60,37 @@ Tasks to complete
 5.  Refactoring of the backend.
 
 6.  Full review of the code.  Specifically the code located on the backend.
+
+
+
+
+
+
+
+
+
+
+
+Add functionality
+
+Deals Add
+ - Cretes a row in deals
+
+Companies Add
+ - Creates a row in companies
+
+Locations Add
+ - Locations
+
+Deal is parent and passes on timestamp/customer_id as a reference to row children in
+companies and locations table
+
+User starts from the deals page
+ - When the user begins inputting data in a column for example company name this will create
+  a new row in the companies table.  Likewise if the user starts entering data in the locations
+  colimn of the deals table the new row is created in the locations table.
+ - Floating divider/ modal body pop up in whihc we can add data pertaining to relevant tables
+    this triggered by pressing enter.  enter to edit. this saves the user having to navbgate to
+    the different table from deals table. Modal  
+
+Contacts one name field - Replace first and second name column with just one contact name field

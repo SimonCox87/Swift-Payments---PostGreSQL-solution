@@ -291,6 +291,7 @@ function App() {
         tempText={tempText}
         amend={amend}
         page={page}
+        companyData={filteredCompanyData}
       />
     ),
   };

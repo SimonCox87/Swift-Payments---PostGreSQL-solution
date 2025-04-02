@@ -12,7 +12,7 @@ function Companies({
     <table>
       <thead>
         <tr>
-          <th>Name</th>
+          <th>Legal Name</th>
           <th>Quote Type</th>
           <th>Location Address</th>
           <th>Settlement Time</th>
